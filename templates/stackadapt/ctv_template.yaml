@@ -1,0 +1,197 @@
+# Metrics view YAML - TEMPLATE
+# DSP: STACKADAPT, Media Type: CTV
+# Reference documentation: https://docs.rilldata.com/reference/project-files/dashboards
+# Generated on 2025-04-19 13:38:11
+# Based on example file: Littlefield - HE Williams - CTV - Stackadapt_metrics.yaml
+
+version: 1
+type: metrics_view
+display_name: TEMPLATE STACKADAPT CTV Metrics
+model: MODEL_NAME_PLACEHOLDER
+timeseries: date
+dimensions:
+- name: advertiser_name
+  display_name: Advertiser Name
+  column: advertiser_name
+- name: line_item_name
+  display_name: Line Item Name
+  column: line_item_name
+- name: campaign_name
+  display_name: Campaign Name
+  column: campaign_name
+- name: ssp_name
+  display_name: Ssp Name
+  column: ssp_name
+- name: deal_id
+  display_name: Deal Id
+  column: deal_id
+- name: deal_name
+  display_name: Deal Name
+  column: deal_name
+- name: domain
+  display_name: Domain
+  column: domain
+- name: app_name
+  display_name: App Name
+  column: app_name
+- name: channel
+  display_name: Channel
+  column: channel
+- name: device_type
+  display_name: Device Type
+  column: device_type
+- name: browser
+  display_name: Browser
+  column: browser
+- name: creative_size
+  display_name: Creative Size
+  column: creative_size
+- name: bid_type
+  display_name: Bid Type
+  column: bid_type
+- name: creative_type
+  display_name: Creative Type
+  column: creative_type
+- name: day_of_week
+  display_name: Day Of Week
+  column: day_of_week
+- name: AGENCY
+  display_name: Agency
+  column: AGENCY
+- name: BRAND
+  display_name: Brand
+  column: BRAND
+- name: DATASOURCE
+  display_name: Datasource
+  column: DATASOURCE
+- name: DATA_FEED_ID
+  display_name: Data Feed Id
+  column: DATA_FEED_ID
+- name: data_type
+  display_name: Data Type
+  column: data_type
+- name: is_swym_deal
+  display_name: Is Swym Deal
+  column: is_swym_deal
+measures:
+- name: num_domains
+  label: Number of Domains
+  expression: COUNT(DISTINCT domain)
+  description: Number of Domains
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: num_deals
+  label: Number of Deals
+  expression: COUNT(DISTINCT deal_id)
+  description: Number of Deals
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: num_ssps
+  label: Number of SSPs
+  expression: COUNT(DISTINCT ssp_id)
+  description: Number of SSPs
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: impressions
+  label: Impressions
+  expression: SUM(impressions)
+  description: Total number of impressions.
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: clicks
+  label: Clicks
+  expression: SUM(clicks)
+  description: Total number of clicks.
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: cost
+  label: Ad Spend
+  expression: SUM(total_cost)
+  description: Ad Spend
+  format_preset: currency_usd
+  valid_percent_of_total: true
+- name: conversions
+  label: Conversions
+  expression: SUM(conversions)
+  description: Total number of conversions.
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: videos_started
+  label: Videos Started
+  expression: SUM(videos_started)
+  description: Videos Started.
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: completed_videos
+  label: Completed Videos
+  expression: SUM(completed_videos)
+  description: Completed Videos
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: audio_started
+  label: Audio Started
+  expression: SUM(audio_started)
+  description: Audio Started.
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: completed_audio
+  label: Completed Audio
+  expression: SUM(completed_audio)
+  description: Completed Audio
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: cpa_total
+  label: CPA (total)
+  expression: SUM(total_cost) / SUM(conversions)
+  description: CPA (total)
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: conversion_rate
+  label: Conversion Rate (%)
+  expression: SUM(conversions) / SUM(impressions) * 100
+  description: Conversion Rate (%)
+  format_d3: .4r
+  valid_percent_of_total: false
+- name: cpcv
+  label: CPCV
+  expression: SUM(total_cost) / SUM(completed_videos)
+  description: Cost per player completed views
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: video_completion_rate
+  label: Video Completion Rate (%)
+  expression: SUM(completed_videos) / SUM(videos_started) * 100
+  description: Video Completion Rate (%)
+  format_d3: .4r
+  valid_percent_of_total: false
+- name: ctr
+  label: CTR (%)
+  expression: SUM(clicks) / SUM(impressions) * 100
+  description: The click-through rate.
+  format_d3: .4r
+  valid_percent_of_total: false
+- name: cpm_total
+  label: CPM (total)
+  expression: SUM(total_cost) / (SUM(impressions) / 1000)
+  description: total cost per thousand impressions.
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpc_total
+  label: CPC (total)
+  expression: SUM(total_cost) / SUM(clicks)
+  description: total cost per click
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cost_per_domains
+  label: Cost Per Domains
+  expression: SUM(total_cost) / COUNT(DISTINCT domain)
+  description: cost per domains
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpm_total_std
+  label: CPM (total) (std)
+  expression: STDDEV(IF(isfinite(total_cost / (impressions / 1000)), total_cost /
+    (impressions / 1000), null))
+  description: standard deviation of total cpm
+  format_preset: currency_usd
+  valid_percent_of_total: false

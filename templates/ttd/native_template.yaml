@@ -1,0 +1,187 @@
+# Metrics view YAML - TEMPLATE
+# DSP: TTD, Media Type: NATIVE
+# Reference documentation: https://docs.rilldata.com/reference/project-files/dashboards
+# Generated on 2025-04-19 13:38:11
+# Based on example file: MarketingDR - MiddlesexCountyNJ - Native - TTD_metrics.yaml
+
+version: 1
+type: metrics_view
+display_name: TEMPLATE TTD NATIVE Metrics
+model: MODEL_NAME_PLACEHOLDER
+timeseries: date
+dimensions:
+- name: ad_environment
+  display_name: Ad Environment
+  column: ad_environment
+- name: ad_format
+  display_name: Ad Format
+  column: ad_format
+- name: ad_group
+  display_name: Ad Group
+  column: ad_group
+- name: app
+  display_name: App
+  column: app
+- name: campaign
+  display_name: Campaign
+  column: campaign
+- name: country
+  display_name: Country
+  column: country
+- name: deal_id
+  display_name: Deal Id
+  column: deal_id
+- name: device_type
+  display_name: Device Type
+  column: device_type
+- name: media_type
+  display_name: Media Type
+  column: media_type
+- name: partner_name
+  display_name: Partner Name
+  column: partner_name
+- name: advertiser
+  display_name: Advertiser
+  column: advertiser
+- name: site
+  display_name: Site
+  column: site
+- name: ssp
+  display_name: Ssp
+  column: ssp
+- name: browser
+  display_name: Browser
+  column: browser
+- name: creative_type
+  display_name: Creative Type
+  column: creative_type
+- name: day_of_week
+  display_name: Day Of Week
+  column: day_of_week
+- name: AGENCY
+  display_name: Agency
+  column: AGENCY
+- name: BRAND
+  display_name: Brand
+  column: BRAND
+- name: DATASOURCE
+  display_name: Datasource
+  column: DATASOURCE
+- name: DATA_FEED_ID
+  display_name: Data Feed Id
+  column: DATA_FEED_ID
+- name: data_type
+  display_name: Data Type
+  column: data_type
+- name: is_swym_deal
+  display_name: Is Swym Deal
+  column: is_swym_deal
+measures:
+- name: num_domains
+  label: Number of Domains
+  expression: COUNT(DISTINCT site)
+  description: Number of Domains
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: num_deals
+  label: Number of Deals
+  expression: COUNT(DISTINCT deal_id)
+  description: Number of Deals
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: num_ssps
+  label: Number of SSPs
+  expression: COUNT(DISTINCT ssp)
+  description: Number of SSPs
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: total_advertiser_cost
+  label: Total Advertiser Cost
+  expression: SUM(total_cost)
+  description: Total cost
+  format_preset: currency_usd
+  valid_percent_of_total: true
+- name: total_media_cost
+  label: Total Media Cost
+  expression: SUM(media_cost)
+  description: Total cost
+  format_preset: currency_usd
+  valid_percent_of_total: true
+- name: impressions
+  label: Impressions
+  expression: SUM(impressions)
+  description: Total number of impressions.
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: clicks
+  label: Clicks
+  expression: SUM(clicks)
+  description: Total number of clicks.
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: player_completed_views
+  label: Total Player Completed Views
+  expression: SUM(player_completed_views)
+  description: Total number of clicks.
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: ctr
+  label: CTR (%)
+  expression: SUM(Clicks) / SUM(Impressions) * 100
+  description: The click-through rate.
+  format_d3: .4r
+  valid_percent_of_total: false
+- name: cpm_total
+  label: CPM (total)
+  expression: SUM(total_cost) / (SUM(Impressions) / 1000)
+  description: total cost per thousand impressions.
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpc_total
+  label: CPC (total)
+  expression: SUM(total_cost) / SUM(Clicks)
+  description: total cost per click
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpm_total_std
+  label: CPM (total) (std)
+  expression: STDDEV(IF(isfinite(total_cost / (Impressions / 1000)), total_cost /
+    (Impressions / 1000), null))
+  description: standard deviation of total cpm
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpm_media
+  label: CPM (media)
+  expression: SUM(media_cost) / (SUM(Impressions) / 1000)
+  description: total cost per thousand impressions.
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpc_media
+  label: CPC (media)
+  expression: SUM(media_cost) / SUM(Clicks)
+  description: total cost per click
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpm_media_std
+  label: CPM (media) (std)
+  expression: STDDEV(IF(isfinite(media_cost / (Impressions / 1000)), total_cost /
+    (Impressions / 1000), null))
+  description: standard deviation of total cpm
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpa_total
+  label: CPA (total)
+  expression: SUM(total_cost)/(SUM("05_total_click_view_conversions") + SUM("04_total_click_view_conversions")
+    + SUM("03_total_click_view_conversions") + SUM("02_total_click_view_conversions")
+    + SUM("01_total_click_view_conversions"))
+  description: CPA (Total Cost)
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpa_media
+  label: CPA (Media)
+  expression: SUM(media_cost)/(SUM("05_total_click_view_conversions") + SUM("04_total_click_view_conversions")
+    + SUM("03_total_click_view_conversions") + SUM("02_total_click_view_conversions")
+    + SUM("01_total_click_view_conversions"))
+  description: CPA (Media Cost)
+  format_preset: currency_usd
+  valid_percent_of_total: false

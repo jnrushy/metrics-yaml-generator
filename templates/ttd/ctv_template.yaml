@@ -1,0 +1,101 @@
+# Metrics view YAML - TEMPLATE
+# DSP: TTD, Media Type: CTV
+# Reference documentation: https://docs.rilldata.com/reference/project-files/dashboards
+# Generated on 2025-04-19 13:38:11
+# Based on example file: Laughlin_NSB-Checking_TTD_CTV_metrics.yaml
+
+version: 1
+type: metrics_view
+display_name: TEMPLATE TTD CTV Metrics
+model: MODEL_NAME_PLACEHOLDER
+timeseries: date
+dimensions:
+- label: Ad Environment
+  column: ad_environment
+- label: Ad Format
+  column: ad_format
+- label: Ad Group
+  column: ad_group
+- label: Advertiser
+  column: advertiser
+- label: App
+  column: app
+- label: Browser
+  column: browser
+- label: Campaign
+  column: campaign
+- label: Country
+  column: country
+- label: Deal Id
+  column: deal_id
+- label: Device Type
+  column: device_type
+- label: Media Type
+  column: media_type
+- label: Partner Name
+  column: partner_name
+- label: Site
+  column: site
+- label: Ssp
+  column: ssp
+- label: Advertiser Currency Code
+  column: advertiser_currency_code
+- label: Creative Type
+  column: creative_type
+- label: Day Of Week
+  column: day_of_week
+- label: Data Type
+  column: data_type
+- label: Is Swym Deal
+  column: is_swym_deal
+measures:
+- name: total_impressions_measure
+  label: Total Impressions
+  expression: SUM(impressions)
+  description: The total number of impressions recorded.
+  format_preset: humanize
+- name: total_clicks_measure
+  label: Total Clicks
+  expression: SUM(clicks)
+  description: The total number of clicks recorded.
+  format_preset: humanize
+- name: total_media_cost_measure
+  label: Total Media Cost
+  expression: SUM(media_cost)
+  description: The total cost incurred for media.
+  format_preset: humanize
+- name: average_media_cost_measure
+  label: Average Media Cost
+  expression: AVG(media_cost)
+  description: The average cost incurred for media.
+  format_preset: humanize
+- name: total_player_completed_views_measure
+  label: Total Player Completed Views
+  expression: SUM(player_completed_views)
+  description: The total number of completed views by players.
+  format_preset: humanize
+- name: total_01_click_conversions_measure
+  label: Total 01 Click Conversions
+  expression: SUM("01_click_conversion")
+  description: The total number of 01 click conversions.
+  format_preset: humanize
+- name: total_02_click_conversions_measure
+  label: Total 02 Click Conversions
+  expression: SUM("02_click_conversion")
+  description: The total number of 02 click conversions.
+  format_preset: humanize
+- name: total_03_click_conversions_measure
+  label: Total 03 Click Conversions
+  expression: SUM("03_click_conversion")
+  description: The total number of 03 click conversions.
+  format_preset: humanize
+- name: total_cost
+  label: Total Cost
+  expression: SUM(total_cost)
+  description: The total cost recorded in the advertiser's currency.
+  format_preset: humanize
+- name: average_impressions_per_campaign_measure
+  label: Average Impressions per Campaign
+  expression: AVG(impressions)
+  description: The average number of impressions per campaign.
+  format_preset: humanize

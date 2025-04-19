@@ -1,0 +1,123 @@
+# Metrics view YAML - TEMPLATE
+# DSP: STACKADAPT, Media Type: DISPLAY
+# Reference documentation: https://docs.rilldata.com/reference/project-files/dashboards
+# Generated on 2025-04-19 13:38:11
+# Based on example file: Summit - DisplayNative - StackAdapt_metrics.yaml
+
+version: 1
+type: metrics_view
+display_name: TEMPLATE STACKADAPT DISPLAY Metrics
+model: MODEL_NAME_PLACEHOLDER
+timeseries: date
+dimensions:
+- name: advertiser_name
+  display_name: Advertiser Name
+  column: advertiser_name
+- name: line_item_name
+  display_name: Line Item Name
+  column: line_item_name
+- name: campaign_name
+  display_name: Campaign Name
+  column: campaign_name
+- name: ssp_name
+  display_name: Ssp Name
+  column: ssp_name
+- name: deal_id
+  display_name: Deal Id
+  column: deal_id
+- name: deal_name
+  display_name: Deal Name
+  column: deal_name
+- name: domain
+  display_name: Domain
+  column: domain
+- name: app_name
+  display_name: App Name
+  column: app_name
+- name: channel
+  display_name: Channel
+  column: channel
+- name: device_type
+  display_name: Device Type
+  column: device_type
+- name: browser
+  display_name: Browser
+  column: browser
+- name: bid_type
+  display_name: Bid Type
+  column: bid_type
+- name: creative_type
+  display_name: Creative Type
+  column: creative_type
+- name: day_of_week
+  display_name: Day Of Week
+  column: day_of_week
+- name: AGENCY
+  display_name: Agency
+  column: AGENCY
+- name: BRAND
+  display_name: Brand
+  column: BRAND
+- name: DATASOURCE
+  display_name: Datasource
+  column: DATASOURCE
+- name: DATA_FEED_ID
+  display_name: Data Feed Id
+  column: DATA_FEED_ID
+- name: data_type
+  display_name: Data Type
+  column: data_type
+- name: is_swym_deal
+  display_name: Is Swym Deal
+  column: is_swym_deal
+measures:
+- name: total_impressions_measure
+  display_name: Total Impressions
+  expression: COUNT(impressions)
+  description: The total number of impressions recorded.
+  format_preset: humanize
+- name: total_clicks_measure
+  display_name: Total Clicks
+  expression: COUNT(clicks)
+  description: The total number of clicks recorded.
+  format_preset: humanize
+- name: total_conversions_measure
+  display_name: Total Conversions
+  expression: COUNT(conversions)
+  description: The total number of conversions recorded.
+  format_preset: humanize
+- name: average_total_cost_measure
+  display_name: Average Total Cost
+  expression: AVG(total_cost)
+  description: The average total cost across all records.
+  format_preset: humanize
+- name: total_videos_started_measure
+  display_name: Total Videos Started
+  expression: COUNT(videos_started)
+  description: The total number of videos started.
+  format_preset: humanize
+- name: total_completed_videos_measure
+  display_name: Total Completed Videos
+  expression: COUNT(completed_videos)
+  description: The total number of completed videos.
+  format_preset: humanize
+- name: total_audio_started_measure
+  display_name: Total Audio Started
+  expression: COUNT(audio_started)
+  description: The total number of audio started.
+  format_preset: humanize
+- name: total_completed_audio
+  display_name: Total Completed Audio
+  expression: COUNT(total_completed_audio)
+  description: The total number of completed audio.
+  format_preset: humanize
+- name: sum_total_cost_measure
+  display_name: Sum of Total Cost
+  expression: SUM(total_cost)
+  description: The sum of all total costs recorded.
+  format_preset: humanize
+- name: max_total_cost_measure
+  display_name: Maximum Total Cost
+  expression: MAX(total_cost)
+  description: The maximum total cost recorded in a single entry.
+  format_preset: humanize

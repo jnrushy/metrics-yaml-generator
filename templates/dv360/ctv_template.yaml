@@ -1,0 +1,162 @@
+# Metrics view YAML - TEMPLATE
+# DSP: DV360, Media Type: CTV
+# Reference documentation: https://docs.rilldata.com/reference/project-files/dashboards
+# Generated on 2025-04-19 13:38:11
+# Based on example file: Causal-IQ_Shell_DV360_CTV_metrics.yaml
+
+version: 1
+type: metrics_view
+display_name: TEMPLATE DV360 CTV Metrics
+model: MODEL_NAME_PLACEHOLDER
+timeseries: date
+dimensions:
+- label: Advertiser
+  column: advertiser
+- label: Advertiser Id
+  column: advertiser_id
+- label: Advertiser Currency
+  column: advertiser_currency
+- label: Insertion Order
+  column: insertion_order
+- label: Insertion Order Id
+  column: insertion_order_id
+- label: Line Item
+  column: line_item
+- label: Line Item Id
+  column: line_item_id
+- label: Inventory Source
+  column: inventory_source
+- label: App Url
+  column: app_url
+- label: Media Type
+  column: media_type
+- label: Device Type
+  column: device_type
+- label: Environment
+  column: environment
+- label: Browser
+  column: browser
+- label: Creative Size
+  column: creative_size
+- label: Deal Id
+  column: deal_id
+- label: Ssp
+  column: ssp
+- label: Click Rate Ctr
+  column: click_rate_ctr
+- label: Creative Type
+  column: creative_type
+- label: Day Of Week
+  column: day_of_week
+- label: Is Swym Deal
+  column: is_swym_deal
+measures:
+- name: num_domains
+  label: Number of Domains
+  expression: COUNT(DISTINCT app_url)
+  description: Number of Domains
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: total_impressions_measure
+  label: Total Impressions
+  expression: SUM(impressions)
+  description: The total number of impressions recorded.
+  format_preset: humanize
+- name: total_clicks_measure
+  label: Total Clicks
+  expression: SUM(clicks)
+  description: The total number of clicks recorded.
+  format_preset: humanize
+- name: num_deals
+  label: Number of Deals
+  expression: COUNT(DISTINCT inventory_source)
+  description: Number of Deals
+  format_preset: humanize
+- name: total_conversions
+  label: Total Conversions
+  expression: SUM(total_conversions)
+  description: The total number of conversions recorded.
+  format_preset: humanize
+- name: total_media_cost_measure
+  label: Total Media Cost
+  expression: SUM(media_cost)
+  description: The total media cost incurred.
+  format_preset: humanize
+- name: total_cost
+  label: Total Cost
+  expression: SUM(total_cost)
+  description: The total cost incurred, including media and other costs.
+  format_preset: humanize
+- name: conversion_rate
+  label: Conversion Rate (%)
+  expression: SUM(total_conversions) / SUM(impressions) * 100
+  description: Conversion Rate (%)
+  format_d3: .4r
+  valid_percent_of_total: false
+- name: num_ssps
+  label: Number of SSPs
+  expression: COUNT(DISTINCT ssp)
+  description: Number of SSPs
+  format_preset: humanize
+  valid_percent_of_total: true
+- name: working_spend
+  label: Working Spend Ratio (%)
+  expression: SUM(media_cost) / SUM(total_cost) * 100
+  description: Working Spend Ratio
+  format_d3: .4r
+  valid_percent_of_total: false
+- name: cpa_media
+  label: CPA (media)
+  expression: SUM(media_cost) / SUM(total_conversions)
+  description: CPA (media)
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpa_total
+  label: CPA (total)
+  expression: SUM(media_cost) / SUM(total_conversions)
+  description: CPA (total)
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: ctr
+  label: CTR (%)
+  expression: SUM(clicks) / SUM(impressions) * 100
+  description: The click-through rate.
+  format_d3: .4r
+  valid_percent_of_total: false
+- name: cpm_media
+  label: CPM (media)
+  expression: SUM(media_cost) / (SUM(impressions) / 1000)
+  description: media cost per thousand impressions.
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpm_total
+  label: CPM (total)
+  expression: SUM(total_cost) / (SUM(impressions) / 1000)
+  description: total cost per thousand impressions.
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpc_media
+  label: CPC (media)
+  expression: SUM(media_cost) / SUM(clicks)
+  description: media cost per click
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpc_total
+  label: CPC (total)
+  expression: SUM(total_cost) / SUM(clicks)
+  description: total cost per click
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cost_per_domains
+  label: Cost Per Domains
+  expression: SUM(media_cost) / COUNT(DISTINCT app_url)
+  description: cost per domains
+  format_preset: currency_usd
+  valid_percent_of_total: false
+- name: cpm_media_std
+  label: CPM (media) (std)
+  expression: STDDEV(IF(isfinite(media_cost / (impressions / 1000)), media_cost /
+    (impressions / 1000), null))
+  description: standard deviation of media cpm
+  format_preset: currency_usd
+  valid_percent_of_total: false

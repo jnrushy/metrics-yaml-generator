@@ -1,0 +1,72 @@
+# Metrics view YAML - TEMPLATE
+# DSP: YAHOO, Media Type: CTV
+# Reference documentation: https://docs.rilldata.com/reference/project-files/dashboards
+# Generated on 2025-04-19 13:38:11
+# Based on example file: HappyCog_Adelphi_CTV_Yahoo_metrics.yaml
+
+version: 1
+type: metrics_view
+display_name: TEMPLATE YAHOO CTV Metrics
+model: MODEL_NAME_PLACEHOLDER
+timeseries: date
+dimensions:
+- label: Ssp
+  column: ssp
+- label: Ad Size
+  column: ad_size
+- label: Ssp Id
+  column: ssp_id
+- label: Inventory Type
+  column: inventory_type
+- label: Advertiser
+  column: advertiser
+- label: Ad Format
+  column: ad_format
+- label: Domain
+  column: domain
+- label: Bid Request Dimensions
+  column: bid_request_dimensions
+- label: Conversion Methodology
+  column: conversion_methodology
+- label: Deal Id
+  column: deal_id
+- label: Conversion Value
+  column: conversion_value
+- label: Dynamic Conversion Value
+  column: dynamic_conversion_value
+- label: Roas
+  column: roas
+- label: Creative Type
+  column: creative_type
+- label: Day Of Week
+  column: day_of_week
+- label: Data Type
+  column: data_type
+- label: Is Swym Deal
+  column: is_swym_deal
+measures:
+- name: total_conversions_measure
+  label: Total Conversions
+  expression: sum(conversions)
+  description: The total number of conversions recorded.
+  format_preset: humanize
+- name: total_view_through_conversions_measure
+  label: Total View-Through Conversions
+  expression: sum(view_through_conversions)
+  description: The total number of view-through conversions.
+  format_preset: humanize
+- name: total_cost
+  label: Total Cost
+  expression: SUM(total_cost)
+  description: The total cost incurred.
+  format_preset: humanize
+- name: total_clicks_measure
+  label: Total Clicks
+  expression: SUM(clicks)
+  description: The total number of clicks recorded.
+  format_preset: humanize
+- name: total_impressions_measure
+  label: Total Impressions
+  expression: SUM(impressions)
+  description: The total number of impressions recorded.
+  format_preset: humanize
