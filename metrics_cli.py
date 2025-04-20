@@ -8,7 +8,7 @@ import json
 # Import our modules
 from generate_metrics_yaml import create_metrics_yaml, generate_all_templates
 from validation import comprehensive_file_validation
-from template_manager import TemplateManager, initialize_presets
+from template_manager import TemplateManager, initialize_presets, merge_metrics_files
 from data_source import SchemaExtractor
 
 @click.group()
@@ -65,6 +65,45 @@ def create_command(client, brand, media_type, platform, output, template, preset
             click.echo("❌ Validation errors found:")
             for error in errors:
                 click.echo(f"  - {error}")
+
+@cli.command('merge-measures')
+@click.argument('base_file', type=click.Path(exists=True))
+@click.argument('source_file', type=click.Path(exists=True))
+@click.option('--output', help='Output path for the merged YAML file. If not provided, the base file will be updated.')
+@click.option('--validate/--no-validate', default=True, help='Validate the generated YAML file')
+def merge_measures_command(base_file, source_file, output, validate):
+    """Merge measures from SOURCE_FILE into BASE_FILE.
+    
+    This command takes measures defined in SOURCE_FILE and adds them to BASE_FILE,
+    avoiding duplicates. The resulting file can either replace BASE_FILE or be
+    written to a new file specified by --output.
+    
+    Example:
+    metrics_cli.py merge-measures client_a.yaml client_b.yaml --output merged.yaml
+    """
+    click.echo(f"Merging measures from {source_file} into {base_file}...")
+    
+    try:
+        output_path, measures_added = merge_metrics_files(base_file, source_file, output)
+        
+        if measures_added > 0:
+            click.echo(f"✅ Added {measures_added} measure(s) to {output_path}")
+        else:
+            click.echo("ℹ️ No new measures were added (all measures already exist in the base file)")
+            
+        # Validate the generated file if requested
+        if validate:
+            is_valid, errors = comprehensive_file_validation(output_path)
+            if is_valid:
+                click.echo("✅ Validation passed!")
+            else:
+                click.echo("❌ Validation errors found:")
+                for error in errors:
+                    click.echo(f"  - {error}")
+                
+    except Exception as e:
+        click.echo(f"❌ Error merging measures: {str(e)}")
+        return
 
 @cli.command('validate')
 @click.argument('file_path', type=click.Path(exists=True))

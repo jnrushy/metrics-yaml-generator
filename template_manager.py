@@ -74,6 +74,58 @@ class TemplateManager:
             print(f"Error loading template {template_path}: {e}")
             return None
     
+    def merge_measures(self, base_file, source_file, output_file=None):
+        """Merge measures from source_file into base_file
+        
+        Args:
+            base_file: Path to the base YAML file that will receive new measures
+            source_file: Path to the source YAML file containing measures to be added
+            output_file: Optional path for the output file. If not provided, base_file will be overwritten
+            
+        Returns:
+            Tuple of (path_to_output_file, number_of_measures_added)
+        """
+        # Default output to base file if not specified
+        if not output_file:
+            output_file = base_file
+            
+        # Load both YAML files
+        with open(base_file, 'r') as f:
+            base_yaml = yaml.safe_load(f)
+            
+        with open(source_file, 'r') as f:
+            source_yaml = yaml.safe_load(f)
+            
+        # Get existing measure names to avoid duplicates
+        base_measures = base_yaml.get("measures", [])
+        source_measures = source_yaml.get("measures", [])
+        
+        existing_measure_names = {measure.get("name") for measure in base_measures}
+        
+        # Add measures from source that don't exist in base
+        measures_added = 0
+        for measure in source_measures:
+            if measure.get("name") not in existing_measure_names:
+                base_measures.append(measure)
+                measures_added += 1
+                
+        # Update the measures in the base YAML
+        base_yaml["measures"] = base_measures
+        
+        # Generate header for the output file
+        header = "# Metrics view YAML\n"
+        header += "# Reference documentation: https://docs.rilldata.com/reference/project-files/dashboards\n"
+        header += f"# Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        header += f"# Base file: {os.path.basename(base_file)}\n"
+        header += f"# Added measures from: {os.path.basename(source_file)}\n\n"
+        
+        # Write the output file
+        with open(output_file, 'w') as f:
+            f.write(header)
+            yaml.dump(base_yaml, f, sort_keys=False, default_flow_style=False)
+            
+        return output_file, measures_added
+    
     def save_preset(self, name, data, description=None):
         """Save a template as a preset"""
         if not name.endswith(".yaml"):
@@ -200,6 +252,13 @@ def initialize_presets():
         if not os.path.exists(preset_path):
             manager.create_custom_preset(base_template, name, overrides, description)
             print(f"Created preset: {name}")
+
+# Helper function for external usage
+def merge_metrics_files(base_file, source_file, output_file=None):
+    """Merge measures from source_file into base_file.
+    A convenience function that uses TemplateManager internally."""
+    manager = TemplateManager()
+    return manager.merge_measures(base_file, source_file, output_file)
 
 if __name__ == "__main__":
     # Initialize preset templates

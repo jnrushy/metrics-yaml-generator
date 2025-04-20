@@ -8,6 +8,7 @@ A comprehensive tool for generating Rill metrics YAML files for digital advertis
 - Create custom preset templates for frequently used configurations
 - Extract metrics definitions directly from Parquet files
 - Validate metrics YAML files against schema
+- Merge measures from one metrics file into another
 - Command-line interface for easy integration
 
 ## Prerequisites
@@ -62,6 +63,24 @@ python metrics_cli.py create --client "ClientName" --brand "BrandName" --media-t
 - `--template`: Custom template path to use
 - `--preset`: Name of a preset template to use
 - `--validate/--no-validate`: Enable/disable validation (default: enabled)
+
+### Merging Measures Between Files
+
+Merge measures from a source file into a base file, adding any metrics that don't already exist:
+
+```bash
+python metrics_cli.py merge-measures base_file.yaml source_file.yaml --output merged.yaml
+```
+
+#### Required Parameters
+
+- `base_file.yaml`: The file that will receive the measures
+- `source_file.yaml`: The file containing measures to be added
+
+#### Optional Parameters
+
+- `--output`: Path for the output file. If not provided, the base file will be updated
+- `--validate/--no-validate`: Enable/disable validation of the result (default: enabled)
 
 ### Managing Templates
 
@@ -122,6 +141,9 @@ python metrics_cli.py create --client "GroupM" --brand "Mizkan" --media-type "CT
 
 # Generate from a Parquet file
 python metrics_cli.py from-parquet data/campaign_data.parquet --model-name "MyClient - MyCampaign"
+
+# Merge measures from one file into another
+python metrics_cli.py merge-measures client_a.yaml client_b.yaml --output merged.yaml
 ```
 
 ## How It Works
