@@ -25,7 +25,7 @@ A comprehensive tool for generating Rill metrics YAML files for digital advertis
 
 1. Clone this repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/jnrushy/metrics-yaml-generator.git
    cd metrics-yaml-generator
    ```
 
