@@ -2,6 +2,7 @@
 import os
 import yaml
 import shutil
+import re
 from datetime import datetime
 
 # Template directory path
@@ -74,16 +75,64 @@ class TemplateManager:
             print(f"Error loading template {template_path}: {e}")
             return None
     
-    def merge_measures(self, base_file, source_file, output_file=None):
+    def extract_column_references(self, expression):
+        """Extract column references from a SQL expression
+        
+        Args:
+            expression: SQL expression string
+            
+        Returns:
+            Set of column names referenced in the expression
+        """
+        # Find all column references in the expression - look for:
+        # 1. Column names in double quotes: "column_name"
+        # 2. Simple column names without quotes: column_name
+        # This is a simplified approach and might not catch all cases
+        quoted_columns = re.findall(r'"([^"]+)"', expression)
+        
+        # For unquoted columns, we need a more careful approach to avoid catching function names
+        # This regex looks for identifiers that aren't preceded by a dot (to avoid table.column) 
+        # and aren't followed by an opening parenthesis (to avoid functions)
+        simple_columns = []
+        for match in re.finditer(r'(?<!\.)(?<!\w)([a-zA-Z_][a-zA-Z0-9_]*)(?!\s*\()', expression):
+            # Skip SQL keywords and function names
+            if match.group(1).lower() not in ['select', 'from', 'where', 'group', 'order', 'by', 
+                                             'having', 'if', 'case', 'when', 'then', 'else', 
+                                             'end', 'and', 'or', 'not', 'null', 'true', 'false',
+                                             'sum', 'count', 'avg', 'min', 'max', 'stddev', 
+                                             'distinct', 'as', 'in', 'between', 'is', 'like']:
+                simple_columns.append(match.group(1))
+        
+        return set(quoted_columns + simple_columns)
+    
+    def get_available_columns(self, dimensions):
+        """Extract available columns from dimensions list
+        
+        Args:
+            dimensions: List of dimension objects
+            
+        Returns:
+            Set of column names available
+        """
+        columns = set()
+        
+        for dimension in dimensions:
+            if "column" in dimension:
+                columns.add(dimension.get("column"))
+        
+        return columns
+    
+    def merge_measures(self, base_file, source_file, output_file=None, validate_columns=True):
         """Merge measures from source_file into base_file
         
         Args:
             base_file: Path to the base YAML file that will receive new measures
             source_file: Path to the source YAML file containing measures to be added
             output_file: Optional path for the output file. If not provided, base_file will be overwritten
+            validate_columns: Whether to check if columns exist in base dataset
             
         Returns:
-            Tuple of (path_to_output_file, number_of_measures_added)
+            Tuple of (path_to_output_file, number_of_measures_added, number_of_measures_skipped)
         """
         # Default output to base file if not specified
         if not output_file:
@@ -102,12 +151,44 @@ class TemplateManager:
         
         existing_measure_names = {measure.get("name") for measure in base_measures}
         
+        # Get available columns from base dimensions
+        available_columns = self.get_available_columns(base_yaml.get("dimensions", []))
+        
+        # Also add any columns already referenced in existing measures
+        for measure in base_measures:
+            if "expression" in measure:
+                refs = self.extract_column_references(measure.get("expression"))
+                available_columns.update(refs)
+        
         # Add measures from source that don't exist in base
         measures_added = 0
+        measures_skipped = 0
+        
+        # Track incompatible measures with reasons for reporting
+        incompatible_measures = []
+        
         for measure in source_measures:
-            if measure.get("name") not in existing_measure_names:
-                base_measures.append(measure)
-                measures_added += 1
+            # Skip if measure already exists
+            if measure.get("name") in existing_measure_names:
+                continue
+                
+            # Check if all column references exist in base dataset
+            if validate_columns and "expression" in measure:
+                column_refs = self.extract_column_references(measure.get("expression"))
+                missing_columns = [col for col in column_refs if col not in available_columns]
+                
+                if missing_columns:
+                    measures_skipped += 1
+                    incompatible_measures.append({
+                        "name": measure.get("name"),
+                        "missing_columns": missing_columns,
+                        "expression": measure.get("expression")
+                    })
+                    continue
+            
+            # Add measure if it passed validation
+            base_measures.append(measure)
+            measures_added += 1
                 
         # Update the measures in the base YAML
         base_yaml["measures"] = base_measures
@@ -117,14 +198,23 @@ class TemplateManager:
         header += "# Reference documentation: https://docs.rilldata.com/reference/project-files/dashboards\n"
         header += f"# Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
         header += f"# Base file: {os.path.basename(base_file)}\n"
-        header += f"# Added measures from: {os.path.basename(source_file)}\n\n"
+        header += f"# Added measures from: {os.path.basename(source_file)}\n"
+        
+        if measures_skipped > 0:
+            header += f"# WARNING: {measures_skipped} measures were skipped due to missing column references\n"
+            
+            # Add details about skipped measures
+            for i, measure in enumerate(incompatible_measures):
+                header += f"# Skipped measure #{i+1}: {measure['name']} - Missing columns: {', '.join(measure['missing_columns'])}\n"
+        
+        header += "\n"
         
         # Write the output file
         with open(output_file, 'w') as f:
             f.write(header)
             yaml.dump(base_yaml, f, sort_keys=False, default_flow_style=False)
             
-        return output_file, measures_added
+        return output_file, measures_added, measures_skipped
     
     def save_preset(self, name, data, description=None):
         """Save a template as a preset"""
@@ -254,11 +344,11 @@ def initialize_presets():
             print(f"Created preset: {name}")
 
 # Helper function for external usage
-def merge_metrics_files(base_file, source_file, output_file=None):
+def merge_metrics_files(base_file, source_file, output_file=None, validate_columns=True):
     """Merge measures from source_file into base_file.
     A convenience function that uses TemplateManager internally."""
     manager = TemplateManager()
-    return manager.merge_measures(base_file, source_file, output_file)
+    return manager.merge_measures(base_file, source_file, output_file, validate_columns)
 
 if __name__ == "__main__":
     # Initialize preset templates

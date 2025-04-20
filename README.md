@@ -8,7 +8,7 @@ A comprehensive tool for generating Rill metrics YAML files for digital advertis
 - Create custom preset templates for frequently used configurations
 - Extract metrics definitions directly from Parquet files
 - Validate metrics YAML files against schema
-- Merge measures from one metrics file into another
+- Merge measures from one metrics file into another (with column compatibility checking)
 - Command-line interface for easy integration
 
 ## Prerequisites
@@ -66,7 +66,7 @@ python metrics_cli.py create --client "ClientName" --brand "BrandName" --media-t
 
 ### Merging Measures Between Files
 
-Merge measures from a source file into a base file, adding any metrics that don't already exist:
+Merge measures from a source file into a base file, adding only metrics that don't already exist and are compatible with the base dataset's schema:
 
 ```bash
 python metrics_cli.py merge-measures base_file.yaml source_file.yaml --output merged.yaml
@@ -81,6 +81,9 @@ python metrics_cli.py merge-measures base_file.yaml source_file.yaml --output me
 
 - `--output`: Path for the output file. If not provided, the base file will be updated
 - `--validate/--no-validate`: Enable/disable validation of the result (default: enabled)
+- `--check-columns/--no-check-columns`: Enable/disable column compatibility checking (default: enabled)
+
+The column compatibility checking ensures that only measures referencing columns that exist in the base dataset will be included. This prevents runtime errors in dashboards due to references to non-existent columns.
 
 ### Managing Templates
 
@@ -142,8 +145,11 @@ python metrics_cli.py create --client "GroupM" --brand "Mizkan" --media-type "CT
 # Generate from a Parquet file
 python metrics_cli.py from-parquet data/campaign_data.parquet --model-name "MyClient - MyCampaign"
 
-# Merge measures from one file into another
+# Merge measures from one file into another (with column compatibility checking)
 python metrics_cli.py merge-measures client_a.yaml client_b.yaml --output merged.yaml
+
+# Merge measures without column compatibility checking (if you're sure about the compatibility)
+python metrics_cli.py merge-measures client_a.yaml client_b.yaml --output merged.yaml --no-check-columns
 ```
 
 ## How It Works
@@ -152,6 +158,7 @@ python metrics_cli.py merge-measures client_a.yaml client_b.yaml --output merged
 2. It extracts the structure, dimensions, and measures from these examples to create template files
 3. When creating a new YAML file, it uses the appropriate template based on the specified DSP and media type
 4. It customizes the template with the provided client, brand, and other information
+5. When merging measures, it analyzes SQL expressions to extract column references and verifies they exist in the target dataset
 
 ## Supported DSPs and Media Types
 

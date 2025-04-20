@@ -71,12 +71,16 @@ def create_command(client, brand, media_type, platform, output, template, preset
 @click.argument('source_file', type=click.Path(exists=True))
 @click.option('--output', help='Output path for the merged YAML file. If not provided, the base file will be updated.')
 @click.option('--validate/--no-validate', default=True, help='Validate the generated YAML file')
-def merge_measures_command(base_file, source_file, output, validate):
+@click.option('--check-columns/--no-check-columns', default=True, help='Check if columns exist in base dataset')
+def merge_measures_command(base_file, source_file, output, validate, check_columns):
     """Merge measures from SOURCE_FILE into BASE_FILE.
     
     This command takes measures defined in SOURCE_FILE and adds them to BASE_FILE,
     avoiding duplicates. The resulting file can either replace BASE_FILE or be
     written to a new file specified by --output.
+    
+    By default, only measures referencing columns that exist in the base dataset
+    will be included. Use --no-check-columns to disable this check.
     
     Example:
     metrics_cli.py merge-measures client_a.yaml client_b.yaml --output merged.yaml
@@ -84,20 +88,29 @@ def merge_measures_command(base_file, source_file, output, validate):
     click.echo(f"Merging measures from {source_file} into {base_file}...")
     
     try:
-        output_path, measures_added = merge_metrics_files(base_file, source_file, output)
+        output_path, measures_added, measures_skipped = merge_metrics_files(
+            base_file, 
+            source_file, 
+            output, 
+            validate_columns=check_columns
+        )
         
         if measures_added > 0:
             click.echo(f"✅ Added {measures_added} measure(s) to {output_path}")
         else:
-            click.echo("ℹ️ No new measures were added (all measures already exist in the base file)")
+            click.echo("ℹ️ No new measures were added")
+            
+        if measures_skipped > 0:
+            click.echo(f"⚠️ Skipped {measures_skipped} measure(s) due to missing column references")
+            click.echo(f"   See header comments in {output_path} for details")
             
         # Validate the generated file if requested
         if validate:
             is_valid, errors = comprehensive_file_validation(output_path)
             if is_valid:
-                click.echo("✅ Validation passed!")
+                click.echo("✅ Schema validation passed!")
             else:
-                click.echo("❌ Validation errors found:")
+                click.echo("❌ Schema validation errors found:")
                 for error in errors:
                     click.echo(f"  - {error}")
                 
