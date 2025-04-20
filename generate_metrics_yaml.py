@@ -5,6 +5,7 @@ import argparse
 import glob
 from datetime import datetime
 import shutil
+import click
 
 # Base directory for the metrics repo - DO NOT modify this directory
 METRICS_DIR = "/Users/jasonrush/SWYM/metrics"
@@ -150,6 +151,7 @@ def create_metrics_yaml(
     brand_name, 
     media_type, 
     platform, 
+    template_path=None,
     output_path=None
 ):
     """Create a new metrics YAML file based on templates"""
@@ -181,18 +183,22 @@ def create_metrics_yaml(
     else:
         media_type_key = "DISPLAY"  # Default
     
-    # Find the appropriate template
-    template_path = os.path.join(TEMPLATE_DIR, dsp_key.lower(), f"{media_type_key.lower()}_template.yaml")
-    
-    # If template doesn't exist, try to generate it
-    if not os.path.exists(template_path):
-        print(f"Template not found at {template_path}. Generating templates...")
-        generate_all_templates()
-    
-    # Check if template exists now
-    if not os.path.exists(template_path):
-        print(f"Could not find or generate template for {dsp_key} {media_type_key}")
-        return None
+    # If template path is provided, use it directly
+    if template_path and os.path.exists(template_path):
+        pass
+    else:
+        # Find the appropriate template
+        template_path = os.path.join(TEMPLATE_DIR, dsp_key.lower(), f"{media_type_key.lower()}_template.yaml")
+        
+        # If template doesn't exist, try to generate it
+        if not os.path.exists(template_path):
+            print(f"Template not found at {template_path}. Generating templates...")
+            generate_all_templates()
+        
+        # Check if template exists now
+        if not os.path.exists(template_path):
+            print(f"Could not find or generate template for {dsp_key} {media_type_key}")
+            return None
     
     # Load the template
     template_data = load_yaml_file(template_path)
@@ -224,6 +230,12 @@ def create_metrics_yaml(
     print(f"Created metrics YAML file: {output_path}")
     return output_path
 
+def create_templates_command():
+    """Create the template files for all DSP and media type combinations"""
+    templates = generate_all_templates()
+    print(f"Generated {len(templates)} template files in {TEMPLATE_DIR}")
+    return templates
+
 def main():
     parser = argparse.ArgumentParser(description='Generate metrics YAML files from templates')
     subparsers = parser.add_subparsers(dest='command', help='Command to run')
@@ -236,24 +248,25 @@ def main():
     metrics_parser.add_argument('--client', required=True, help='Client/Agency name')
     metrics_parser.add_argument('--brand', required=True, help='Brand name')
     metrics_parser.add_argument('--media-type', required=True, help='Media type (Display, Native, Video, CTV)')
-    metrics_parser.add_argument('--platform', required=True, help='Platform (TTD, DV360, StackAdapt, Yahoo)')
+    metrics_parser.add_argument('--platform', required=True, help='Platform (TTD, DV360, StackAdapt, Yahoo, etc.)')
+    metrics_parser.add_argument('--template', help='Path to template YAML file')
     metrics_parser.add_argument('--output', help='Custom output path for the YAML file')
     
     args = parser.parse_args()
     
     if args.command == 'generate-templates':
-        templates = generate_all_templates()
-        print(f"Generated {len(templates)} template files in {TEMPLATE_DIR}")
+        create_templates_command()
     elif args.command == 'create':
         create_metrics_yaml(
             client_name=args.client,
             brand_name=args.brand,
             media_type=args.media_type,
             platform=args.platform,
+            template_path=args.template,
             output_path=args.output
         )
     else:
-        # Default behavior
+        # Default behavior - show help
         parser.print_help()
 
 if __name__ == "__main__":

@@ -1,0 +1,123 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Rill Metrics View Schema",
+  "description": "Schema for validating metrics view YAML files",
+  "type": "object",
+  "required": [
+    "version",
+    "type",
+    "display_name",
+    "model",
+    "timeseries",
+    "dimensions",
+    "measures"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "description": "Schema version",
+      "enum": [1]
+    },
+    "type": {
+      "type": "string",
+      "description": "Type of view",
+      "enum": ["metrics_view"]
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Display name for the metrics view"
+    },
+    "model": {
+      "type": "string",
+      "description": "Model name to use for this metrics view"
+    },
+    "timeseries": {
+      "type": "string",
+      "description": "Column name to use as the timeseries"
+    },
+    "dimensions": {
+      "type": "array",
+      "description": "Dimensions to include in the metrics view",
+      "items": {
+        "type": "object",
+        "required": ["column"],
+        "anyOf": [
+          {
+            "required": ["name", "display_name", "column"]
+          },
+          {
+            "required": ["label", "column"]
+          }
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Unique identifier for the dimension"
+          },
+          "display_name": {
+            "type": "string",
+            "description": "Display name for the dimension"
+          },
+          "label": {
+            "type": "string",
+            "description": "Alternative to display_name for the dimension"
+          },
+          "column": {
+            "type": "string",
+            "description": "Column name in the data model"
+          }
+        }
+      }
+    },
+    "measures": {
+      "type": "array",
+      "description": "Measures to include in the metrics view",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "expression"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Unique identifier for the measure"
+          },
+          "label": {
+            "type": "string",
+            "description": "Display name for the measure"
+          },
+          "display_name": {
+            "type": "string",
+            "description": "Alternative to label for the measure"
+          },
+          "expression": {
+            "type": "string",
+            "description": "SQL expression for calculating the measure"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the measure"
+          },
+          "format_preset": {
+            "type": "string",
+            "description": "Format preset for the measure",
+            "enum": [
+              "humanize", 
+              "currency_usd", 
+              "percentage", 
+              "decimal", 
+              "integer"
+            ]
+          },
+          "format_d3": {
+            "type": "string",
+            "description": "D3 format string for the measure"
+          },
+          "valid_percent_of_total": {
+            "type": "boolean",
+            "description": "Whether the measure can be used as a percent of total"
+          }
+        }
+      }
+    }
+  }
+} 
